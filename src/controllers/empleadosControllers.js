@@ -112,39 +112,59 @@ const actualizarEmpleado = (req, res) => {
         numeroIdentificacion,
         correo,
         fechaIngreso,
-        salario,
-        telefonos
+        salario
     },
         {
-            include: [
-                {
-                    model: Telefonos_Empleados,
-                    as: "telefonos"
-                }],
             where: {
                 id: idEmpleado
             }
         }
     )
         .then(result => {
-            // if (telefonos) {
-            //     const result2 = await Telefonos_Empleados.update({
-            //         telefonos
-            //     },
-            //         {
-            //             where: {
-            //                 empleado_id: idEmpleado
-            //             }
-            //         }
-            //     );
-            // }
-            res.json({
-                msg: "Empleado actualizado correctamente",
-                empleado: {
-                    id: idEmpleado
-                }
-            })
-
+            if (telefonos) {
+                Telefonos_Empleados.destroy(
+                    {
+                        where: {
+                            empleado_id: idEmpleado
+                        }
+                    }
+                )
+                    .then(result2 => {
+                        telefonos.forEach(async tel => {
+                            try {
+                                const result3 = await Telefonos_Empleados.create(
+                                    {
+                                        telefono: tel.telefono,
+                                        empleado_id: idEmpleado
+                                    })
+                            } catch (err) {
+                                console.log(err);
+                                res.status(500).json({
+                                    error: 'Error interno del servidor, intente más tarde'
+                                });
+                            }
+                        });
+                        res.json({
+                            msg: "Empleado actualizado correctamente",
+                            empleado: {
+                                id: idEmpleado
+                            }
+                        })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({
+                            error: 'Error interno del servidor, intente más tarde'
+                        });
+                    });
+            } else {
+                res.json({
+                    msg: "Empleado actualizado correctamente",
+                    empleado: {
+                        id: idEmpleado
+                    }
+                })
+            }
         })
         .catch(err => {
             console.log(err);

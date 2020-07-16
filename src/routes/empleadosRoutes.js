@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { Empleados, Telefonos_Empleados } = require('../models/index')
 const { todosEmpleados, empleadoId, empleadoNuevo, actualizarEmpleado, borrarEmpleado } = require('../controllers/empleadosControllers');
 
 router.get('/', todosEmpleados); //buscar todos los empleados
