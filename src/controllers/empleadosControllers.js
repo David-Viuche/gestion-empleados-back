@@ -86,7 +86,7 @@ const empleadoNuevo = (req, res) => {
     )
         .then(result => {
             res.status(201).json({
-                msg: "empleado creado correctamente",
+                msg: "Empleado creado correctamente",
                 empleado: {
                     id: result.id
                 }
@@ -100,8 +100,104 @@ const empleadoNuevo = (req, res) => {
         });
 }
 
+const actualizarEmpleado = (req, res) => {
+
+    const idEmpleado = req.params.id;
+    const { nombre, apellido, tipoIdentificacion, numeroIdentificacion, correo, fechaIngreso, salario, telefonos } = req.body;
+
+    Empleados.update({
+        nombre,
+        apellido,
+        tipoIdentificacion,
+        numeroIdentificacion,
+        correo,
+        fechaIngreso,
+        salario,
+        telefonos
+    },
+        {
+            include: [
+                {
+                    model: Telefonos_Empleados,
+                    as: "telefonos"
+                }],
+            where: {
+                id: idEmpleado
+            }
+        }
+    )
+        .then(result => {
+            // if (telefonos) {
+            //     const result2 = await Telefonos_Empleados.update({
+            //         telefonos
+            //     },
+            //         {
+            //             where: {
+            //                 empleado_id: idEmpleado
+            //             }
+            //         }
+            //     );
+            // }
+            res.json({
+                msg: "Empleado actualizado correctamente",
+                empleado: {
+                    id: idEmpleado
+                }
+            })
+
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor, intente más tarde'
+            });
+        });
+}
+
+const borrarEmpleado = (req, res) => {
+
+    const idEmpleado = req.params.id;
+
+    Empleados.destroy(
+        {
+            where: {
+                id: idEmpleado
+            }
+        }
+    )
+        .then(result => {
+            if (result != 0) {
+                Telefonos_Empleados.destroy(
+                    {
+                        where: {
+                            empleado_id: idEmpleado
+                        }
+                    }
+                ).then(
+                    result2 => {
+                        res.json({
+                            msg: "Empleado borrado correctamente"
+                        })
+                    })
+            } else {
+                res.status(404).json({
+                    error: 'Empleado no encontrado'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor, intente más tarde'
+            });
+        });
+
+}
+
 module.exports = {
     todosEmpleados,
     empleadoId,
-    empleadoNuevo
+    empleadoNuevo,
+    actualizarEmpleado,
+    borrarEmpleado
 }

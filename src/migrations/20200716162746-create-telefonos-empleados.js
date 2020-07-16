@@ -14,7 +14,8 @@ module.exports = {
         reference: {
           model: 'empleados',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE'
       },
       telefono: {
         type: Sequelize.BIGINT

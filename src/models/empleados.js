@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
         models.Telefonos_Empleados,
         {
           foreignKey: 'empleado_id',
-          as: 'telefonos'
+          as: 'telefonos',
+          onDelete: 'CASCADE'
         }
       );
     }

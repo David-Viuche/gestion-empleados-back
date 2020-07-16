@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const { Empleados, Telefonos_Empleados } = require('../models/index')
-const { todosEmpleados, empleadoId, empleadoNuevo } = require('../controllers/empleadosControllers');
+const { todosEmpleados, empleadoId, empleadoNuevo, actualizarEmpleado, borrarEmpleado } = require('../controllers/empleadosControllers');
 
 router.get('/', todosEmpleados); //buscar todos los empleados
 router.get('/:id', empleadoId); //buscar un empleado por el Id
 router.post('/', empleadoNuevo) //crear un nuevo empleado
+router.put('/:id', actualizarEmpleado) //Actualizar empleado por Id
+router.delete('/:id', borrarEmpleado) // Eliminar empleado por Id
 
 module.exports = router;
