@@ -40,15 +40,15 @@ const empleadoId = (req, res) => {
             attributes: {
                 exclude: ['createdAt', 'updatedAt']
             },
-            where:{
+            where: {
                 id: idEmpleado
             }
         }
     )
         .then(result => {
-            if(result.length != 0){
+            if (result.length != 0) {
                 res.json(result);
-            }else{
+            } else {
                 res.status(404).json({
                     error: 'Empleado no encontrado'
                 });
@@ -62,7 +62,46 @@ const empleadoId = (req, res) => {
         });
 }
 
+const empleadoNuevo = (req, res) => {
+
+    const { nombre, apellido, tipoIdentificacion, numeroIdentificacion, correo, fechaIngreso, salario, telefonos } = req.body;
+
+    Empleados.create({
+        nombre,
+        apellido,
+        tipoIdentificacion,
+        numeroIdentificacion,
+        correo,
+        fechaIngreso,
+        salario,
+        telefonos
+    },
+        {
+            include: [
+                {
+                    model: Telefonos_Empleados,
+                    as: "telefonos"
+                }],
+        }
+    )
+        .then(result => {
+            res.status(201).json({
+                msg: "empleado creado correctamente",
+                empleado: {
+                    id: result.id
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor, intente más tarde'
+            });
+        });
+}
+
 module.exports = {
     todosEmpleados,
-    empleadoId
+    empleadoId,
+    empleadoNuevo
 }
