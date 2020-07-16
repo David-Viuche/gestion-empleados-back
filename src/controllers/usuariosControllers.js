@@ -14,7 +14,7 @@ const usuarioNuevo = (req, res) => {
         .then(result => {
             res.status(201).json({
                 msg: "Usuario creado correctamente",
-                empleado: {
+                usuario: {
                     id: result.id
                 }
             })
@@ -27,6 +27,36 @@ const usuarioNuevo = (req, res) => {
         });
 }
 
+const usuarioPorId = (req, res) => {
+    const idUsuario = req.params.id;
+    Usuarios.findOne(
+        {
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'contraseña']
+            },
+            where: {
+                id: idUsuario
+            }
+        }
+    )
+        .then(result => {
+            if (result.length != 0) {
+                res.json(result);
+            } else {
+                res.status(404).json({
+                    error: 'Usuario no encontrado'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor, intente más tarde'
+            });
+        });
+}
+
 module.exports = {
-    usuarioNuevo
+    usuarioNuevo,
+    usuarioPorId
 }

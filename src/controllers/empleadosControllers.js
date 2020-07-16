@@ -28,7 +28,7 @@ const todosEmpleados = (req, res) => {
 
 const empleadoId = (req, res) => {
     const idEmpleado = req.params.id;
-    Empleados.findAll(
+    Empleados.findOne(
         {
             include: [{
                 model: Telefonos_Empleados,

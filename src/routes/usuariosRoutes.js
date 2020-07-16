@@ -1,6 +1,7 @@
 const router = require('express').Router();
-const { usuarioNuevo } = require('../controllers/usuariosControllers');
+const { usuarioNuevo, usuarioPorId } = require('../controllers/usuariosControllers');
 
-router.post('/', usuarioNuevo); //buscar usuario por Id
+router.post('/', usuarioNuevo); //Crear un usuario nuevo
+router.get('/:id', usuarioPorId); //buscar un usuario por Id
 
 module.exports = router;
