@@ -1,6 +1,7 @@
 const { Usuarios } = require('../models/index');
 const bcrypt = require('bcrypt');
 const { saltRounds } = require('../config/config');
+const { generateTokenJWT } = require('../middlewares/jwtMiddleware');
 
 const usuarioNuevo = async (req, res) => {
 
@@ -79,8 +80,18 @@ const loginUsuarios = (req, res) => {
                             id: result.id
                         }
                     }).then(result2 => {
+                        const token = generateTokenJWT(
+                            {
+                                id_usuario: result.id,
+                                creacion: Date.now(),
+                                vencimiento: Date.now() + 1800000
+                            }
+                        );
                         res.status(201).json({
-                            msg: 'sesion iniciada correctamente'
+                            msg: 'sesion iniciada correctamente',
+                            data: {
+                                token
+                            }
                         });
                     })
                 } else {
