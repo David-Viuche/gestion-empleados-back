@@ -56,7 +56,86 @@ const usuarioPorId = (req, res) => {
         });
 }
 
+const loginUsuarios = (req, res) => {
+    const { correo, contraseña } = req.body;
+
+    Usuarios.findOne({
+        where: {
+            correo
+        }
+    })
+        .then(result => {
+            if (result) {
+                if (result.contraseña == contraseña) {
+                    Usuarios.update({
+                        active: 1
+                    }, {
+                        where: {
+                            id: result.id
+                        }
+                    }).then(result2 => {
+                        res.status(201).json({
+                            msg: 'sesion iniciada correctamente'
+                        });
+                    })
+                } else {
+                    res.status(401).json({
+                        msg: 'contraseña incorrecta'
+                    });
+                }
+            } else {
+                res.status(401).json({
+                    msg: 'correo incorrecto'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor, intente más tarde'
+            });
+        });
+}
+
+const logoutUsuarios = (req, res) => {
+    const userId = req.params.id;
+
+    Usuarios.findOne({
+        where: {
+            id:userId
+        }
+    })
+        .then(result => {
+            if (result) {
+                Usuarios.update({
+                    active: 0
+                }, {
+                    where: {
+                        id: result.id
+                    }
+                }).then(result2 => {
+                    res.json({
+                        msg: 'sesion cerrada correctamente'
+                    });
+                })
+            } else {
+                res.status(404).json({
+                    msg: 'usuario incorrecto'
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor, intente más tarde'
+            });
+        });
+}
+
+
 module.exports = {
     usuarioNuevo,
-    usuarioPorId
+    usuarioPorId,
+    loginUsuarios,
+    logoutUsuarios
 }
