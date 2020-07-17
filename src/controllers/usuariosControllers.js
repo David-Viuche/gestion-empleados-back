@@ -1,14 +1,18 @@
 const { Usuarios } = require('../models/index');
+const bcrypt = require('bcrypt');
+const { saltRounds } = require('../config/config');
 
-const usuarioNuevo = (req, res) => {
+const usuarioNuevo = async (req, res) => {
 
     const { nombre, apellido, correo, contraseña } = req.body;
+
+    const contraseñaEncriptada = await bcrypt.hash(contraseña, saltRounds);
 
     Usuarios.create({
         nombre,
         apellido,
         correo,
-        contraseña
+        contraseña: contraseñaEncriptada
     }
     )
         .then(result => {
@@ -64,9 +68,10 @@ const loginUsuarios = (req, res) => {
             correo
         }
     })
-        .then(result => {
+        .then(async result => {
             if (result) {
-                if (result.contraseña == contraseña) {
+                const contraseñaValida = await bcrypt.compare(contraseña, result.contraseña);
+                if (contraseñaValida) {
                     Usuarios.update({
                         active: 1
                     }, {
@@ -102,7 +107,7 @@ const logoutUsuarios = (req, res) => {
 
     Usuarios.findOne({
         where: {
-            id:userId
+            id: userId
         }
     })
         .then(result => {
