@@ -1,6 +1,6 @@
 const { Usuarios } = require('../models/index');
 const bcrypt = require('bcrypt');
-const { saltRounds } = require('../config/config');
+const { saltRounds } = require('../config/configServer');
 const { generateTokenJWT } = require('../middlewares/jwtMiddleware');
 
 const usuarioNuevo = async (req, res) => {
@@ -33,7 +33,7 @@ const usuarioNuevo = async (req, res) => {
 }
 
 const usuarioPorId = (req, res) => {
-    const idUsuario = req.params.id;
+    const idUsuario = req.params.usuario.id_usuario;
     Usuarios.findOne(
         {
             attributes: {
@@ -114,7 +114,7 @@ const loginUsuarios = (req, res) => {
 }
 
 const logoutUsuarios = (req, res) => {
-    const userId = req.params.id;
+    const userId = req.params.usuario.id_usuario;
 
     Usuarios.findOne({
         where: {

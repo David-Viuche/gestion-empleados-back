@@ -46,7 +46,7 @@ const empleadoId = (req, res) => {
         }
     )
         .then(result => {
-            if (result.length != 0) {
+            if (result) {
                 res.json(result);
             } else {
                 res.status(404).json({
@@ -121,49 +121,55 @@ const actualizarEmpleado = (req, res) => {
         }
     )
         .then(result => {
-            if (telefonos) {
-                Telefonos_Empleados.destroy(
-                    {
-                        where: {
-                            empleado_id: idEmpleado
+            if (result[0] > 0) {
+                if (telefonos) {
+                    Telefonos_Empleados.destroy(
+                        {
+                            where: {
+                                empleado_id: idEmpleado
+                            }
                         }
-                    }
-                )
-                    .then(result2 => {
-                        telefonos.forEach(async tel => {
-                            try {
-                                const result3 = await Telefonos_Empleados.create(
-                                    {
-                                        telefono: tel.telefono,
-                                        empleado_id: idEmpleado
-                                    })
-                            } catch (err) {
-                                console.log(err);
-                                res.status(500).json({
-                                    error: 'Error interno del servidor, intente más tarde'
-                                });
-                            }
-                        });
-                        res.json({
-                            msg: "Empleado actualizado correctamente",
-                            empleado: {
-                                id: idEmpleado
-                            }
+                    )
+                        .then(result2 => {
+                            telefonos.forEach(async tel => {
+                                try {
+                                    const result3 = await Telefonos_Empleados.create(
+                                        {
+                                            telefono: tel.telefono,
+                                            empleado_id: idEmpleado
+                                        })
+                                } catch (err) {
+                                    console.log(err);
+                                    res.status(500).json({
+                                        error: 'Error interno del servidor, intente más tarde'
+                                    });
+                                }
+                            });
+                            res.json({
+                                msg: "Empleado actualizado correctamente",
+                                empleado: {
+                                    id: idEmpleado
+                                }
+                            })
                         })
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        res.status(500).json({
-                            error: 'Error interno del servidor, intente más tarde'
+                        .catch(err => {
+                            console.log(err);
+                            res.status(500).json({
+                                error: 'Error interno del servidor, intente más tarde'
+                            });
                         });
-                    });
+                } else {
+                    res.json({
+                        msg: "Empleado actualizado correctamente",
+                        empleado: {
+                            id: idEmpleado
+                        }
+                    })
+                }
             } else {
-                res.json({
-                    msg: "Empleado actualizado correctamente",
-                    empleado: {
-                        id: idEmpleado
-                    }
-                })
+                res.status(404).json({
+                    error: 'Empleado no encontrado'
+                });
             }
         })
         .catch(err => {
